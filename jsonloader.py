@@ -41,14 +41,15 @@ for filename in files:
         pts = list(geom.exterior.coords)
         if 'post' in filename:
             damage_cls =  i["properties"]["subtype"]
-            if(damage_cls == "no-damage"):damage=100
-            elif(damage_cls == "minor-damage"):damage=150
-            elif(damage_cls == "major-damage"):damage=200
-            elif(damage_cls == "destroyed"):damage=255
+            if(damage_cls == "no-damage"):damage=1
+            elif(damage_cls == "minor-damage"):damage=2
+            elif(damage_cls == "major-damage"):damage=3
+            elif(damage_cls == "destroyed"):damage=4
+            else:damage=5
         poly_path=Path(pts)
     
     #    print(poly_path)
-        x, y = np.mgrid[:height, :width]
+        y, x = np.mgrid[:height, :width]
     
         coors = (np.hstack((x.reshape(-1, 1), y.reshape(-1,1))))# coors.shape is (4000000,2)
     
