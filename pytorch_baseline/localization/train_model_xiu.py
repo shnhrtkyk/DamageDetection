@@ -4,6 +4,7 @@ from __future__ import print_function
 import argparse
 import numpy as np
 from unet import UNet
+from att_unet import AttU_Net
 # from eval import eval_net
 import torch
 import torch.nn as nn
@@ -42,6 +43,8 @@ def train_model():
                         help='Crop size for validation-set images')
     parser.add_argument('--lr', type=int, default=0.001,
                         help='learning rate')
+    parser.add_argument('--model', type=str, default="unet",
+                        help='select model: unet or att_unet')
 
     args = parser.parse_args()
 
@@ -60,8 +63,8 @@ def train_model():
     log_dir = args.out
     if not os.path.exists(log_dir):
         os.mkdir(log_dir)
-
-    model = UNet(n_channels=3, n_classes=1) # for one class and background, n_classes=1
+    if(args.model == unet):model = UNet(n_channels=3, n_classes=1) # for one class and background, n_classes=1
+    elif(args.model == att_unet):model = AttU_Net(n_channels=3, n_classes=1) # for one class and background, n_classes=1
 
     if args.gpu >= 0:
         model = model.cuda()
