@@ -1,3 +1,5 @@
 # sem.seg.による建物検出
-## model unet系列
+## model 
+* unet
+* attention unet
 
