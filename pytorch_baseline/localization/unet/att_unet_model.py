@@ -2,9 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import init
-
-
-
+from .att_unet_parts import *
 
 class U_Net(nn.Module):
     def __init__(self,img_ch=3,output_ch=1):
