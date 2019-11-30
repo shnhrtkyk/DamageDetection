@@ -1,0 +1,1 @@
+python inference.py --input /dd/data/test/images/test_post_00000.png  --weights /dd/code/logs/20191129/models/CP_epoch200.pth  --mean /dd/data/xBD_old/spacenet_gt/dataSet/mean.npy --output /dd/code/inference_output/file.json
