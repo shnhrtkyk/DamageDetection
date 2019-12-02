@@ -65,12 +65,14 @@ def process_img(img_array, polygon_pts, scale_pct):
     return img_array[ymin:ymax, xmin:xmax, :]
 
 
-def process_img_poly(img_path, label_path,  output_dir, output_csv):
+def process_img_poly(img_path_pre,img_path_post,  label_path,  output_dir_pre,output_dir_post, output_csv):
     x_data = [] 
-    img_obj = Image.open(img_path)
+    img_obj = Image.open(img_path_post)
+    img_obj_pre = Image.open(img_path_pre)
 
     #Applies histogram equalization to image
     img_array = np.array(img_obj)
+    img_array_pre = np.array(img_obj_pre)
     #clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     #img_array = clahe.apply(img_array_pre)
 
@@ -87,9 +89,11 @@ def process_img_poly(img_path, label_path,  output_dir, output_csv):
         polygon_geom = shapely.wkt.loads(feat['wkt'])
         polygon_pts = np.array(list(polygon_geom.exterior.coords))
         poly_img = process_img(img_array, polygon_pts, 0.8)
+        poly_img_pre = process_img(img_array_pre, polygon_pts, 0.8)
 
         # Write out the polygon in its own image
-        cv2.imwrite(output_dir + "/" + poly_uuid, poly_img)
+        cv2.imwrite(output_dir_post + "/" + poly_uuid, poly_img)
+        cv2.imwrite(output_dir_pre + "/" + poly_uuid, poly_img_pre)
         x_data.append(poly_uuid)
 
     data_array = {'uuid': x_data}
@@ -99,17 +103,25 @@ def process_img_poly(img_path, label_path,  output_dir, output_csv):
 def main():
 
     parser = argparse.ArgumentParser(description='Run Building Damage Classification Training & Evaluation')
-    parser.add_argument('--input_img',
+    parser.add_argument('--input_img_pre',
                         required=True,
-                        metavar="/path/to/xBD_input",
+                        metavar="/path/to/xBD_input_pre",
+                        help="Full path to the parent dataset directory")
+    parser.add_argument('--input_img_post',
+                        required=True,
+                        metavar="/path/to/xBD_input_post",
                         help="Full path to the parent dataset directory")
     parser.add_argument('--label_path',
                         required=True,
                         metavar="/path/to/xBD_input",
                         help="Full path to the parent dataset directory")
-    parser.add_argument('--output_dir',
+    parser.add_argument('--output_dir_pre',
                         required=True,
-                        metavar='/path/to/xBD_output',
+                        metavar='/path/to/xBD_output_pre',
+                        help="Path to new directory to save images")
+    parser.add_argument('--output_dir_post',
+                        required=True,
+                        metavar='/path/to/xBD_output_post',
                         help="Path to new directory to save images")
     parser.add_argument('--output_csv',
                         required=True, 
@@ -118,7 +130,7 @@ def main():
 
     args = parser.parse_args()
 
-    process_img_poly(args.input_img, args.label_path, args.output_dir, args.output_csv)
+    process_img_poly(args.input_img_pre, args.input_img_post, args.label_path, args.output_dir_pre, args.output_dir_post, args.output_csv)
 
 
 if __name__ == '__main__':
