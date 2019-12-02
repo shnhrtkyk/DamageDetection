@@ -84,11 +84,12 @@ def process_img(img_array, polygon_pts, scale_pct):
     return img_array[ymin:ymax, xmin:xmax, :]
 
 
-def process_data(input_path, output_path, output_csv_path, val_split_pct):
+def process_data(input_path,input_path_pre, output_path, output_path_pre, output_csv_path, val_split_pct):
     """Process Raw Data into
 
         Args:
             dir_path (path): Path to the xBD dataset.
+            dir_path_pre (path): Path to the xBD dataset(pre).
             data_type (string): String to indicate whether to process
                                 train, test, or holdout data.
 
@@ -102,14 +103,20 @@ def process_data(input_path, output_path, output_csv_path, val_split_pct):
 
     disasters = [folder for folder in os.listdir(input_path) if not folder.startswith('.') and ('midwest') not in folder]
     disaster_paths = ([input_path + "/" +  d + "/images" for d in disasters])
+    disaster_paths_pre = ([input_path_pre + "/" +  d + "/images" for d in disasters])
     image_paths = []
+    image_paths_pre = []
     image_paths.extend([(disaster_path + "/" + pic) for pic in os.listdir(disaster_path)] for disaster_path in disaster_paths)
+    image_paths_pre.extend([(disaster_paths_pre + "/" + pic) for pic in os.listdir(disaster_paths_pre)] for disaster_path in disaster_paths_pre)
     img_paths = np.concatenate(image_paths)
-
+    img_paths_pre = np.concatenate(image_paths_pre)
+    i=0
     for img_path in tqdm(img_paths):
 
         img_obj = Image.open(img_path)
         img_array = np.array(img_obj)
+        img_obj_pre = Image.open(img_paths_pre[i])
+        img_array_pre = np.array(img_obj_pre)
 
         #Get corresponding label for the current image
         label_path = img_path.replace('png', 'json').replace('images', 'labels')
@@ -132,7 +139,9 @@ def process_data(input_path, output_path, output_csv_path, val_split_pct):
             polygon_geom = shapely.wkt.loads(feat['wkt'])
             polygon_pts = np.array(list(polygon_geom.exterior.coords))
             poly_img = process_img(img_array, polygon_pts, 0.8)
+            poly_img_pre = process_img(img_array_pre, polygon_pts, 0.8)
             cv2.imwrite(output_path + "/" + poly_uuid, poly_img)
+            cv2.imwrite(output_path_pre + "/" + poly_uuid, poly_img_pre)
             x_data.append(poly_uuid)
     
     output_train_csv_path = os.path.join(output_csv_path, "train.csv")
