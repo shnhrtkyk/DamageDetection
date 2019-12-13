@@ -1,0 +1,1 @@
+python /dd/code/train_multi_unet.py /dd/data/xBD/spacenet_gt/dataSet/ /dd/data/xBD/spacenet_gt/images/ /dd/data/xBD/spacenet_gt/multi_class_labels/ -e 1000 --batch_size 4  --batch_size_val 8 --out /dd/code/logs/20191212/multi_unet_ce/ --model_name multi_unet --backbone resnet --lr 0.01 --loss_type ce --use_class_weight 1 
